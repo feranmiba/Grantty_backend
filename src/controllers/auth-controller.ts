@@ -104,10 +104,18 @@ export const login = async (
          VALUES ($1, $2, $3) RETURNING id, email, fullname`,
         [email, hashedPassword, fullname]
       );
+
+
+      const accessToken = jwt.sign(
+        email,
+        process.env.JWT_SECRET as string,
+        { expiresIn: "20m" }
+      );
   
       cache.del(email);
       res.status(201).json({
         message: "User created successfully.",
+        accessToken: accessToken,
         user: result.rows[0]
       });
   
