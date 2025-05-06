@@ -12,7 +12,7 @@ app.use(express.json());
 
 // Root route
 app.get('/', (_req, res) => {
-  res.send('Hello from TypeScript + Express!');
+  res.send('Hello from TypeScript + Express!, This is grantty backend');
 });
 
 // Auth routes

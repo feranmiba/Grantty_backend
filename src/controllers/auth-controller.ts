@@ -83,7 +83,7 @@ export const login = async (
     res: Response,
     next: NextFunction
   ): Promise<void> => {
-    const { email, code } = req.body;
+    const { email, code, fullname, password } = req.body;
     const cachedDetails = cache.get<CachedUserData>(email);
   
     if (!cachedDetails || cachedDetails.code !== code) {
@@ -92,29 +92,37 @@ export const login = async (
     }
   
     try {
-      if (cachedDetails.type === 'resetpassword') {
-        const result = await db.query(
-          "UPDATE user_credential SET password = $1 WHERE email = $2 RETURNING id",
-          [cachedDetails.password, email]
-        );
+      // Check if user already exists
+      const existingUser = await db.query(
+        "SELECT * FROM user_credential WHERE email = $1",
+        [email]
+      );
   
-        if (result.rowCount === 0) {
-          res.status(404).json({ message: "User not found" });
-          return;
-        }
-  
-        cache.del(email);
-        res.status(200).json({ message: "Password successfully updated." });
+      if (existingUser.rows.length > 0) {
+        res.status(400).json({ message: "User already exists." });
         return;
       }
   
-      res.status(400).json({ message: "Invalid operation for this route." });
+      // Hash password and insert new user
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      const result = await db.query(
+        `INSERT INTO user_credential (email, password, fullname) 
+         VALUES ($1, $2, $3) RETURNING id, email, fullname`,
+        [email, hashedPassword, fullname]
+      );
+  
+      cache.del(email);
+      res.status(201).json({
+        message: "User created successfully.",
+        user: result.rows[0]
+      });
   
     } catch (error) {
       console.error("SignUp error:", error);
       res.status(500).json({ error: 'Server error, please try again' });
     }
   };
+  
 
 // ✅ VERIFY CODE — only for reset password
 export const verifyCode = async (req: Request, res: Response): Promise<Response> => {
