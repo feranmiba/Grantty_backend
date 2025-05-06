@@ -83,13 +83,7 @@ export const login = async (
     res: Response,
     next: NextFunction
   ): Promise<void> => {
-    const { email, code, fullname, password } = req.body;
-    const cachedDetails = cache.get<CachedUserData>(email);
-  
-    if (!cachedDetails || cachedDetails.code !== code) {
-      res.status(400).json({ message: 'Invalid email or code' });
-      return;
-    }
+    const { email, fullname, password } = req.body;
   
     try {
       // Check if user already exists
