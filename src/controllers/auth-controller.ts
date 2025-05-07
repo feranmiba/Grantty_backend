@@ -44,31 +44,31 @@ export const login = async (
         return;
       }
   
-      const creatorProfile = await db.query(
-        "SELECT * FROM creatorprofile WHERE user_id = $1",
-        [user.id]
-      );
-      const attendeeProfile = await db.query(
-        "SELECT * FROM userprofiles WHERE user_id = $1",
-        [user.id]
-      );
+      // const creatorProfile = await db.query(
+      //   "SELECT * FROM creatorprofile WHERE user_id = $1",
+      //   [user.id]
+      // );
+      // const attendeeProfile = await db.query(
+      //   "SELECT * FROM userprofiles WHERE user_id = $1",
+      //   [user.id]
+      // );
   
-      const profile = creatorProfile.rows[0] || attendeeProfile.rows[0];
+      // const profile = creatorProfile.rows[0] || attendeeProfile.rows[0];
   
-      if (!profile) {
-        res.status(404).json({ message: "User profile not found." });
-        return;
-      }
+      // if (!profile) {
+      //   res.status(404).json({ message: "User profile not found." });
+      //   return;
+      // }
   
       const accessToken = jwt.sign(
-        profile,
+        email,
         process.env.JWT_SECRET as string,
         { expiresIn: "20m" }
       );
   
       res.status(200).json({
-        userID: profile.user_id,
-        profile,
+        // userID: profile.user_id,
+        // profile,
         accessToken
       });
   
