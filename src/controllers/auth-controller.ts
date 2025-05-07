@@ -61,11 +61,11 @@ export const login = async (
       // }
   
       const accessToken = jwt.sign(
-        email,
+        { email },                       // ✅ Correct: Payload is an object
         process.env.JWT_SECRET as string,
-        { expiresIn: "20m" }
+        { expiresIn: "20m" }             // Valid expiration format
       );
-  
+      
       res.status(200).json({
         // userID: profile.user_id,
         // profile,
@@ -107,10 +107,11 @@ export const login = async (
 
 
       const accessToken = jwt.sign(
-        email,
+        { email },                       // ✅ Correct: Payload is an object
         process.env.JWT_SECRET as string,
-        { expiresIn: "20m" }
+        { expiresIn: "20m" }             // Valid expiration format
       );
+      
   
       cache.del(email);
       res.status(201).json({
