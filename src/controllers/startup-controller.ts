@@ -137,3 +137,77 @@ export const Get_All_Startups = async (
         res.status(500).json({ message: "Internal server error" });
     }
 };
+export const Get_Startup_By_Id = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const { id } = req.params;
+
+    try {
+        const query = `
+            SELECT 
+                s.*, 
+                f.full_name AS founder_full_name, 
+                f.linkedin_profile AS founder_linkedin_profile,
+                f.email_address AS founder_email, 
+                f.phone_no AS founder_phone_no, 
+                f.profile_img AS founder_profile_img,
+                f.nin AS founder_nin, 
+                f.role AS founder_role 
+            FROM startups s
+            LEFT JOIN founders f ON s.founder_id = f.founder_id
+            WHERE s.startup_id = $1
+        `;
+        const result = await db.query(query, [id]);
+
+        if (result.rows.length === 0) {
+            res.status(404).json({ message: "Startup not found" });
+            return;
+        }
+
+        res.status(200).json({
+            message: "Startup retrieved successfully",
+            data: result.rows[0]
+        });
+    } catch (error) {
+        console.error("Error fetching startup by ID:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+export const Get_Startups_By_User_Id = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const { userId } = req.params;
+
+    try {
+        const query = `
+            SELECT 
+                s.*, 
+                f.full_name AS founder_full_name, 
+                f.linkedin_profile AS founder_linkedin_profile,
+                f.email_address AS founder_email, 
+                f.phone_no AS founder_phone_no, 
+                f.profile_img AS founder_profile_img,
+                f.nin AS founder_nin, 
+                f.role AS founder_role 
+            FROM startups s
+            LEFT JOIN founders f ON s.founder_id = f.founder_id
+            WHERE f.user_id = $1
+        `;
+        const result = await db.query(query, [userId]);
+
+        if (result.rows.length === 0) {
+            res.status(404).json({ message: "No startups found for this user" });
+            return;
+        }
+
+        res.status(200).json({
+            message: "Startups retrieved successfully",
+            data: result.rows
+        });
+    } catch (error) {
+        console.error("Error fetching startups by user ID:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
