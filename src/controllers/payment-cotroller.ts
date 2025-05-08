@@ -1,14 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 import { initializePayment, verifyPayment } from '../services/paystack-services';
 
-export const initializePaymentController = async (  req: Request,
-    res: Response,
-    next: NextFunction ): Promise<void>  => {
+export const initializePaymentController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
     const { email, amount } = req.body;
 
     if (!email || !amount) {
       res.status(400).json({ message: 'Email and amount are required' });
+      return; // Exit the function if validation fails
     }
 
     const result = await initializePayment(email, amount);
@@ -17,7 +20,8 @@ export const initializePaymentController = async (  req: Request,
       data: result,
     });
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    console.error('Payment Initialization Error:', error.message);
+    res.status(500).json({ message: error.message || 'Payment initialization failed' });
   }
 };
 
