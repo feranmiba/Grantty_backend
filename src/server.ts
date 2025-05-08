@@ -1,5 +1,7 @@
 import express from 'express';
 import authRoute from './routes/auth-route';
+import startupRoute from './routes/startup-route';
+import paymentRoute from './routes/payment-routes';
 import dotenv from "dotenv";
 import cors from 'cors'
 
@@ -20,6 +22,11 @@ app.get('/', (_req, res) => {
 
 // Auth routes
 app.use("/auth", authRoute);
+// Startup routes
+app.use("/startup", startupRoute);
+// Payment routes
+app.use("/payment", paymentRoute);
+
 
 // Start server
 app.listen(PORT, () => {
