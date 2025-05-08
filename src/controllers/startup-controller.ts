@@ -103,3 +103,37 @@ export const Create_Startup = async (
         res.status(500).json({ message: "Internal server error" });
     }
 };
+export const Get_All_Startups = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        // Query to fetch all startups with their associated founders
+        const startupQuery = `
+            SELECT 
+                s.startup_id, s.startup_name, s.startup_description, s.startup_location, s.startup_website, 
+                s.startup_email, s.startup_picture, s.team_size, s.no_of_teams, s.cofounder, s.profile_image,
+                s.linkedin_profile, s.nin, s.amount_of_funds, s.usage_of_funds, s.no_of_customers, 
+                s.video, s.startup_industry, f.full_name AS founder_full_name, f.linkedin_profile AS founder_linkedin_profile,
+                f.email_address AS founder_email, f.phone_no AS founder_phone_no, f.profile_img AS founder_profile_img,
+                f.nin AS founder_nin, f.role AS founder_role
+            FROM startups s
+            LEFT JOIN founders f ON s.founder_id = f.founder_id
+        `;
+        const startupResult = await db.query(startupQuery);
+
+        if (startupResult.rows.length === 0) {
+            res.status(404).json({ message: "No startups found" });
+            return;
+        }
+
+        res.status(200).json({
+            message: "Startups and founders retrieved successfully",
+            data: startupResult.rows
+        });
+    } catch (error) {
+        console.error("Error retrieving all startups and founders:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
