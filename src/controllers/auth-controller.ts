@@ -19,64 +19,56 @@ interface CachedUserData {
 }
 
 export const login = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    const { email, password } = req.body;
-  
-    try {
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const { email, password } = req.body;
+
+  try {
       const usermailExist = await db.query(
-        "SELECT * FROM user_credential WHERE email = $1",
-        [email]
+          "SELECT * FROM user_credential WHERE email = $1",
+          [email]
       );
-  
+
       if (usermailExist.rows.length === 0) {
-        res.status(404).json({ message: "User not found." });
-        return;
+          res.status(404).json({ message: "User not found." });
+          return;
       }
-  
+
       const user = usermailExist.rows[0];
       const isPasswordValid = await bcrypt.compare(password, user.password);
-  
+
       if (!isPasswordValid) {
-        res.status(400).json({ message: "Incorrect password. Try again." });
-        return;
+          res.status(400).json({ message: "Incorrect password. Try again." });
+          return;
       }
-  
-      // const creatorProfile = await db.query(
-      //   "SELECT * FROM creatorprofile WHERE user_id = $1",
-      //   [user.id]
-      // );
-      // const attendeeProfile = await db.query(
-      //   "SELECT * FROM userprofiles WHERE user_id = $1",
-      //   [user.id]
-      // );
-  
-      // const profile = creatorProfile.rows[0] || attendeeProfile.rows[0];
-  
-      // if (!profile) {
-      //   res.status(404).json({ message: "User profile not found." });
-      //   return;
-      // }
-  
+
+      // Creating JWT token with user ID and email (no sensitive data)
       const accessToken = jwt.sign(
-        { email },                       // ✅ Correct: Payload is an object
-        process.env.JWT_SECRET as string,
-        { expiresIn: "20m" }             // Valid expiration format
+          { userId: user.id, email: user.email }, 
+          process.env.JWT_SECRET as string,
+          { expiresIn: "20m" }
       );
-      
+
+      delete user.password;
+
       res.status(200).json({
-        // userID: profile.user_id,
-        // profile,
-        accessToken
+          message: "Login successful",
+          accessToken,
+          user: {
+              id: user.id,
+              email: user.email,
+              full_name: user.fullname, 
+          },
       });
-  
-    } catch (error) {
+
+  } catch (error) {
       console.error("Login error:", error);
       res.status(500).json({ message: "Server error. Please try again later." });
-    }
-  };
+  }
+};
+
   
   export const SignUp = async (
     req: Request,
