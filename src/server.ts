@@ -1,9 +1,10 @@
 import express from 'express';
+import path from 'path';
 import authRoute from './routes/auth-route';
 import startupRoute from './routes/startup-route';
 import paymentRoute from './routes/payment-routes';
 import dotenv from "dotenv";
-import cors from 'cors'
+import cors from 'cors';
 
 dotenv.config();
 
@@ -15,9 +16,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve uploads folder statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Root route
 app.get('/', (_req, res) => {
-  res.send('Hello from TypeScript + Express!, This is grantty backend');
+  res.send('Hello from TypeScript + Express! This is Grantty backend');
 });
 
 // Auth routes
@@ -26,7 +30,6 @@ app.use("/auth", authRoute);
 app.use("/startup", startupRoute);
 // Payment routes
 app.use("/payment", paymentRoute);
-
 
 // Start server
 app.listen(PORT, () => {
