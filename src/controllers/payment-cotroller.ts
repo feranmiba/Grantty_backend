@@ -36,6 +36,10 @@ export const verifyPaymentController = async (  req: Request,
       message: 'Payment verified successfully',
       data: result,
     });
+
+      const saveQuery = `
+        INSERT INTO payments (startup_name, email, amount)
+        VALUES ($1, $2, $3) RETURNING *`;
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
