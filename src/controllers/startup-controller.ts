@@ -32,14 +32,15 @@ export const Create_Startup = async (
         phone_no,
         founder_profile_img,
         founder_nin,
-        role
+        role,
+        user_id
     } = req.body;
 
     try {
         // Insert founder information
         const founderQuery = `
-            INSERT INTO founders (full_name, linkedin_profile, email_address, phone_no, profile_img, nin, role)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO founders (full_name, linkedin_profile, email_address, phone_no, profile_img, nin, role, user_id)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             RETURNING *
         `;
         const founderValues = [
@@ -49,7 +50,8 @@ export const Create_Startup = async (
             phone_no,
             founder_profile_img,
             founder_nin,
-            role
+            role, 
+            user_id
         ];
         const founderResult = await db.query(founderQuery, founderValues);
         const founder = founderResult.rows[0];
