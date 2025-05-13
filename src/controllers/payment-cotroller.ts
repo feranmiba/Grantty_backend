@@ -15,7 +15,7 @@ export const initializePaymentController = async (
       return; // Exit the function if validation fails
     }
 
-    const result = await initializePayment(email, amount, full_name, callback_url, reference);
+    const result = await initializePayment(email, amount, full_name, callback_url);
     res.status(200).json({
       message: 'Payment initialized successfully',
       data: result,

@@ -23,7 +23,6 @@ interface PaystackResponse {
 export const initializePayment = async (
   email: string,
   amount: number,
-  reference: string,
   full_name: string,
   callback_url: string
 ): Promise<string> => {
@@ -33,7 +32,7 @@ export const initializePayment = async (
       {
         email,
         amount: amount * 100, // Convert to kobo
-        reference: reference, // Unique reference
+        reference: generateReference(), // Unique reference
         callback_url, // Callback URL
         name: full_name, // Customer name
       },
@@ -60,7 +59,7 @@ export const initializePayment = async (
 // Verify Payment
 export const verifyPayment = async (reference: string) => {
   try {
-    const response = await axios.get<{ status: boolean; data: any }>(
+    const response = await axios.get<PaystackResponse>(
       `${PAYSTACK_BASE_URL}/transaction/verify/${reference}`,
       {
         headers: {
