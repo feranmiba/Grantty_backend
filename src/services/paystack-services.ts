@@ -23,6 +23,7 @@ interface PaystackResponse {
 export const initializePayment = async (
   email: string,
   amount: number,
+  reference: number,
   full_name: string,
   callback_url: string
 ): Promise<string> => {
@@ -32,7 +33,7 @@ export const initializePayment = async (
       {
         email,
         amount: amount * 100, // Convert to kobo
-        reference: generateReference(), // Unique reference
+        reference: reference, // Unique reference
         callback_url, // Callback URL
         name: full_name, // Customer name
       },

@@ -8,14 +8,14 @@ export const initializePaymentController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { email, amount, full_name, callback_url, startup_id } = req.body;
+    const { email, amount, full_name, callback_url, startup_id, reference } = req.body;
 
     if (!email || !amount) {
       res.status(400).json({ message: 'Email and amount are required' });
       return; // Exit the function if validation fails
     }
 
-    const result = await initializePayment(email, amount, full_name, callback_url);
+    const result = await initializePayment(email, amount, full_name, callback_url, reference);
     res.status(200).json({
       message: 'Payment initialized successfully',
       data: result,
