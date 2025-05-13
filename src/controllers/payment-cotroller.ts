@@ -30,7 +30,7 @@ export const verifyPaymentController = async (  req: Request,
     res: Response,
     next: NextFunction ): Promise<void> =>  {
   try {
-    const { reference } = req.params;
+    const { reference, startup_name, email, amount, startup_id, payment_id} = req.params;
 
     if (!reference) {
       res.status(400).json({ message: 'Reference is required' });
@@ -42,9 +42,13 @@ export const verifyPaymentController = async (  req: Request,
       data: result,
     });
 
-      const saveQuery = `
-        INSERT INTO payments (startup_name, email, amount)
-        VALUES ($1, $2, $3) RETURNING *`;
+    const savePayment = await db.query(
+
+      'INSERT INTO payments (startup_name, email, amount, payment_reference, payment_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [startup_name, email, amount, reference, startup_id, payment_id]
+    );
+
+    
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
