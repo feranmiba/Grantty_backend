@@ -8,7 +8,7 @@ export const initializePaymentController = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { email, amount, full_name, callback_url } = req.body;
+    const { email, amount, full_name, callback_url, startup_id } = req.body;
 
     if (!email || !amount) {
       res.status(400).json({ message: 'Email and amount are required' });
