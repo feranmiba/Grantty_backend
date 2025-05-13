@@ -23,7 +23,7 @@ interface PaystackResponse {
 export const initializePayment = async (
   email: string,
   amount: number,
-  reference: number,
+  reference: string,
   full_name: string,
   callback_url: string
 ): Promise<string> => {
